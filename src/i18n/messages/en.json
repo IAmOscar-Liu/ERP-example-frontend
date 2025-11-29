@@ -1,0 +1,30 @@
+{
+  "MENU.HOME": "Home",
+  "MENU.DASHBOARD": "Dashboard",
+  "MENU.PERSONAL_MNG": "Personal",
+  "MENU.PERSONAL_MNG.ATTENDANCE": "Attendance",
+  "MENU.PERSONAL_MNG.LEAVE": "Leave",
+  "MENU.PERSONAL_MNG.OVERTIME": "Overtime",
+
+  "MENU.MANAGER_MNG": "Manager",
+  "MENU.MANAGER_MNG.ATTENDANCE": "Attendance",
+  "MENU.MANAGER_MNG.LEAVE": "Leave",
+  "MENU.MANAGER_MNG.OVERTIME": "Overtime",
+
+  "PAGINATION_CONTROLLER.EACH_PAGE": "Show",
+  "PAGINATION_CONTROLLER.EACH_PAGE_UNIT": "entries",
+  "PAGINATION_CONTROLLER.PAGE_NO": "Page",
+  "PAGINATION_CONTROLLER.SHOW": "Showing",
+  "PAGINATION_CONTROLLER.TO": "to",
+  "PAGINATION_CONTROLLER.OF": "of",
+  "PAGINATION_CONTROLLER.PREV_PAGE": "Prev",
+  "PAGINATION_CONTROLLER.NEXT_PAGE": "Next",
+
+  "GENERAL.MESSAGE.INFO": "Message",
+  "GENERAL.MESSAGE.ARE_YOU_SURE": "Are you sure?",
+  "GENERAL.MESSAGE.YES": "Yes",
+  "GENERAL.MESSAGE.NO": "No",
+
+  "general.validation.required": "Required",
+  "general.nodata": "No data available"
+}

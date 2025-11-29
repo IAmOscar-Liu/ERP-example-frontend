@@ -1,0 +1,169 @@
+import { CustomDatePicker } from "@/components/form/CustomDatePicker";
+import CustomCombobox from "@/components/others/CustomCombobox";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { QUERY_KEYS } from "@/constants";
+import useEmployeeApi from "@/feature/employee/api";
+import type { Employee } from "@/feature/employee/type";
+import { cn } from "@/lib/utils";
+import type { SearchQueries } from "@/type";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState, type FormEvent } from "react";
+import { useLocation } from "react-router";
+
+function LeaveSearch({
+  updateQueryValue,
+  className,
+  withEmployee = false,
+}: {
+  updateQueryValue: (update: SearchQueries) => void;
+  className?: string;
+  withEmployee?: boolean;
+}) {
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
+  const { listEmployees } = useEmployeeApi();
+  const { data: employeeData } = useQuery({
+    queryKey: [QUERY_KEYS.Employee],
+    queryFn: () => listEmployees(),
+    enabled: withEmployee,
+  });
+
+  const [employeeId, setEmployeeId] = useState<string | undefined>(() => {
+    const query = params.get("employeeId");
+    return query ?? undefined;
+  });
+
+  const [status, setStatus] = useState<string>(() => {
+    const query = params.get("status");
+    return query ?? "all";
+  });
+
+  useEffect(() => {
+    if (params.get("status")) {
+      const query = params.get("status");
+      console.log(`status: ${query}`);
+    }
+  }, [params.get("status")]);
+
+  const [from, setFrom] = useState<Date | undefined>(() => {
+    const query = params.get("from");
+    return query ? new Date(query) : undefined;
+  });
+
+  const [to, setTo] = useState<Date | undefined>(() => {
+    const query = params.get("to");
+    return query ? new Date(query) : undefined;
+  });
+
+  const handleSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (withEmployee) {
+      updateQueryValue({
+        employeeId,
+        status: status === "all" ? undefined : status,
+        from: from ? from.toISOString() : undefined,
+        to: to ? to.toISOString() : undefined,
+        page: 1,
+      });
+    } else {
+      updateQueryValue({
+        status: status === "all" ? undefined : status,
+        from: from ? from.toISOString() : undefined,
+        to: to ? to.toISOString() : undefined,
+        page: 1,
+      });
+    }
+  };
+
+  const extractEmployeeById = (id?: string) => {
+    if (!id) return undefined;
+    const result = (employeeData ?? []).find((emp) => emp.id === id);
+    return result ? { value: result.id, label: buildLabel(result) } : undefined;
+  };
+
+  const buildLabel = (emp: Employee) => {
+    return (
+      <div>
+        {emp.fullName}
+        <small className="ms-2">{emp.employeeNo}</small>
+      </div>
+    );
+  };
+
+  return (
+    <form className={cn("flex gap-2", className)} onSubmit={handleSearchSubmit}>
+      {withEmployee && (
+        <div className="flex flex-col gap-2">
+          <Label>Employee</Label>
+          <CustomCombobox
+            options={[
+              { value: "all", label: "All" },
+              ...(employeeData ?? []).map((emp) => ({
+                value: emp.id,
+                label: buildLabel(emp),
+              })),
+            ]}
+            value={extractEmployeeById(employeeId)}
+            onChange={(d) =>
+              setEmployeeId(!d || d.value === "all" ? undefined : d.value)
+            }
+          />
+        </div>
+      )}
+
+      <div className="flex flex-col gap-2">
+        <Label>Start Date</Label>
+        <CustomDatePicker
+          withClear
+          placeholder="Enter start Date"
+          value={from}
+          onChange={setFrom}
+        />
+      </div>
+      <div className="flex flex-col gap-2">
+        <Label>End Date</Label>
+        <CustomDatePicker
+          withClear
+          placeholder="Enter End Date"
+          value={to}
+          onChange={setTo}
+        />
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Label>Status</Label>
+        <Select value={status} onValueChange={setStatus}>
+          <SelectTrigger className="w-[150px]">
+            <SelectValue placeholder="Select status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Status</SelectLabel>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="approved">Approved</SelectItem>
+              <SelectItem value="rejected">Rejected</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <Button size="sm" className="ms-2 mt-auto">
+        Search
+      </Button>
+    </form>
+  );
+}
+
+export default LeaveSearch;

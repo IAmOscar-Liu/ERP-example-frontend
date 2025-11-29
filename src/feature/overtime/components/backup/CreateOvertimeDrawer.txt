@@ -1,0 +1,274 @@
+import { CustomDatePicker } from "@/components/form/CustomDatePicker";
+import CustomFormField, {
+  CustomFormLabel,
+} from "@/components/form/CustomFormField";
+import CustomLoadingButton from "@/components/form/CustomLoadingButton";
+import CustomTimePicker from "@/components/form/CustomTimePicker";
+import { Button } from "@/components/ui/button";
+import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { useToast } from "@/context/ToastProvider";
+import {
+  calculateOvertimePlannedHours,
+  localToUTCISOString,
+} from "@/lib/timeCalculator";
+import { extractErrorMessage, toDateOnlyString } from "@/lib/utils";
+import type { DialogCreateProps, Employee } from "@/type";
+import { DevTool } from "@hookform/devtools";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useEffect, useMemo } from "react";
+import { useForm } from "react-hook-form";
+import { useIntl } from "react-intl";
+import { z } from "zod";
+import useOvertimeApi from "../api";
+
+const DEFAULT_FORM_VALUE = {
+  workDate: undefined,
+  startAt: "17:00",
+  endAt: "18:00",
+  plannedHours: 0,
+  reason: "",
+  convertToCompTime: false,
+};
+
+function CreateOvertimeDrawer(
+  props: DialogCreateProps & {
+    employee?: Employee;
+    onSuccess?: () => void;
+  },
+) {
+  const { open, setOpen, employee, onSuccess } = props;
+  const { formatMessage: t } = useIntl();
+  const { createOvertime } = useOvertimeApi();
+  const { mutateAsync: handleCreateOvertime } = useMutation({
+    mutationFn: createOvertime,
+  });
+
+  const formSchema = useMemo(
+    () =>
+      z
+        .object({
+          workDate: z.preprocess(
+            (val) => {
+              if (val === undefined) return undefined;
+              if (val instanceof Date) return val;
+              return new Date(String(val));
+            },
+            z.date(t({ id: "general.validation.required" })),
+          ),
+          startAt: z.string(t({ id: "general.validation.required" })),
+          endAt: z.string(t({ id: "general.validation.required" })),
+          plannedHours: z.number(),
+          reason: z.string(),
+          convertToCompTime: z.boolean(),
+        })
+        .refine(
+          (data) => {
+            if (data.workDate) {
+              return data.plannedHours > 0;
+            }
+            return true;
+          },
+          {
+            message: "Planned hours must be greater than 0",
+            path: ["plannedHours"],
+          },
+        ),
+    [],
+  );
+  const toast = useToast();
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    mode: "onTouched",
+    shouldUnregister: true,
+    defaultValues: DEFAULT_FORM_VALUE,
+  });
+
+  const handleSubmit = async (value: z.infer<typeof formSchema>) => {
+    console.log("Submitted:", value);
+    if (!employee) return;
+
+    const inputStartAt = localToUTCISOString(
+      `${toDateOnlyString(value.workDate)} ${value.startAt}`,
+    );
+    const inputEndAt = localToUTCISOString(
+      `${toDateOnlyString(value.workDate)} ${value.endAt}`,
+    );
+    if (!inputStartAt || !inputEndAt) return;
+
+    await handleCreateOvertime({
+      employeeId: employee.id,
+      workDate: toDateOnlyString(value.workDate),
+      startAt: inputStartAt,
+      endAt: inputEndAt,
+      reason: value.reason,
+      convertToCompTime: value.convertToCompTime,
+      plannedHours: value.plannedHours,
+    })
+      .then(() => {
+        toast.success({
+          title: "Overtime request submitted successfully",
+        });
+        if (onSuccess) onSuccess();
+        setOpen(false);
+      })
+      .catch((e) => {
+        console.error(e);
+        toast.error({
+          title: "Failed to submit overtime request",
+          description: extractErrorMessage(e),
+        });
+      });
+  };
+
+  useEffect(() => {
+    if (!open) {
+      // form.reset(undefined, { keepTouched: false, keepIsSubmitted: false });
+      form.reset(DEFAULT_FORM_VALUE, { keepDefaultValues: false });
+    }
+  }, [open]);
+
+  const [workDate, startAt, endAt] = form.watch([
+    "workDate",
+    "startAt",
+    "endAt",
+  ]);
+  useEffect(() => {
+    const getPlannedHours = () => {
+      // console.log("plannedHours", { workDate, startAt, endAt });
+      if (!workDate || !startAt || !endAt) return null;
+      const startLocalDateTime = `${toDateOnlyString(workDate as Date)} ${startAt}`;
+      const endLocalDateTime = `${toDateOnlyString(workDate as Date)} ${endAt}`;
+
+      // console.log("LocalDateTime", { startLocalDateTime, endLocalDateTime });
+
+      const startUTCISOString = localToUTCISOString(startLocalDateTime);
+      const endUTCISOString = localToUTCISOString(endLocalDateTime);
+
+      // console.log("UTCISOString", { startUTCISOString, endUTCISOString });
+
+      if (!startUTCISOString || !endUTCISOString) return null;
+      return calculateOvertimePlannedHours(startUTCISOString, endUTCISOString);
+    };
+    form.setValue("plannedHours", getPlannedHours() ?? 0, {
+      shouldValidate: true,
+    });
+  }, [workDate, startAt, endAt]);
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetContent
+        side="right"
+        className="sm:min-w-[480px]"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
+        <SheetHeader>
+          <SheetTitle>New Overtime Request</SheetTitle>
+          <SheetDescription>
+            Employee: {employee?.fullName ?? "N/A"}
+          </SheetDescription>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)}>
+              <div className="mx-2 my-4">
+                <FormField
+                  control={form.control}
+                  name="workDate"
+                  render={({ field }) => (
+                    <FormItem className="mb-4 flex flex-col">
+                      <CustomFormLabel required label="Work Date" />
+                      <CustomDatePicker
+                        placeholder="yyyy/mm/dd"
+                        value={field.value as Date | undefined}
+                        onChange={(d) => field.onChange(d)}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="startAt"
+                  render={({ field }) => (
+                    <FormItem className="mb-4 flex flex-col">
+                      <CustomFormLabel required label="Start At" />
+                      <CustomTimePicker
+                        value={field.value as string | undefined}
+                        onChange={(d) => field.onChange(d)}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="endAt"
+                  render={({ field }) => (
+                    <FormItem className="mb-4 flex flex-col">
+                      <CustomFormLabel required label="End At" />
+                      <CustomTimePicker
+                        value={field.value as string | undefined}
+                        onChange={(d) => field.onChange(d)}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <CustomFormField
+                  disabled
+                  type="number"
+                  control={form.control}
+                  name="plannedHours"
+                  label="Planned Hours"
+                  fieldClassName="mb-4"
+                />
+                <CustomFormField
+                  type="textarea"
+                  control={form.control}
+                  name="reason"
+                  label="Reason"
+                  placeholder="Reason for overtime request"
+                  fieldClassName="mb-4"
+                />
+                <CustomFormField
+                  type="checkbox"
+                  control={form.control}
+                  name="convertToCompTime"
+                  label="Convert to Compensatory Leave"
+                  fieldClassName="mb-3"
+                />
+              </div>
+              <SheetFooter>
+                <div className="flex justify-end gap-3">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => setOpen(false)}
+                  >
+                    Close
+                  </Button>
+                  <CustomLoadingButton
+                    isLoading={form.formState.isSubmitting}
+                    disabled={!form.formState.isValid || !employee}
+                  >
+                    Submit
+                  </CustomLoadingButton>
+                </div>
+              </SheetFooter>
+            </form>
+          </Form>
+        </SheetHeader>
+        {import.meta.env.DEV && <DevTool control={form.control} />}
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+export default CreateOvertimeDrawer;

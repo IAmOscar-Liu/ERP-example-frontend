@@ -1,0 +1,160 @@
+{
+  "message": "success",
+  "data": {
+    "patient_id": 1,
+    "bed_id": 1,
+    "sensor_id": 1,
+    "chart_data": [
+      {
+        "timestamp": "2025-11-20 02:43:06",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:43:09",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:43:12",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:43:16",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:43:19",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:43:22",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:43:25",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:43:28",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:43:31",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:43:34",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:43:37",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:43:40",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:43:43",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:43:46",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:43:49",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:43:52",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:43:55",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:43:59",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:44:02",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:44:05",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:44:08",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:44:11",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:44:14",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:44:17",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:44:20",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:44:23",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:44:26",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:44:29",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:44:32",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      },
+      {
+        "timestamp": "2025-11-20 02:44:35",
+        "heart_rate": 71.48,
+        "resp_rate": 4.69
+      }
+    ]
+  }
+}

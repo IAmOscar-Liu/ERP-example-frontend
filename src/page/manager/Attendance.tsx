@@ -53,7 +53,6 @@ function AttendanceTable({ className }: { className?: string }) {
     to: toDateOnlyString(new Date()),
   });
   const { getAttendance } = useAttendanceApi();
-  const { listEmployees } = useEmployeeApi();
   const {
     data: attendanceData,
     isFetching,
@@ -70,10 +69,6 @@ function AttendanceTable({ className }: { className?: string }) {
         toDate: queryValue.to,
       }),
     staleTime: STALE_TIME.AttendanceManagement,
-  });
-  const { data: employeeData } = useQuery({
-    queryKey: [QUERY_KEYS.Employee],
-    queryFn: () => listEmployees(),
   });
 
   return (

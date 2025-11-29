@@ -68,7 +68,7 @@ function OvertimeTable({ className }: { className?: string }) {
     error,
     refetch,
   } = useQuery({
-    queryKey: [QUERY_KEYS.Overtime, queryValue],
+    queryKey: [QUERY_KEYS.OvertimeManagement, queryValue],
     queryFn: () =>
       listOvertimes({
         employeeId: queryValue.employeeId,
@@ -79,7 +79,7 @@ function OvertimeTable({ className }: { className?: string }) {
         to: queryValue.to,
       }),
     enabled: !!currentUser?.id,
-    staleTime: STALE_TIME.Overtime,
+    staleTime: STALE_TIME.OvertimeManagement,
   });
   const [selectedOvertimeId, setSelectedOvertimeId] = useState<
     string | undefined

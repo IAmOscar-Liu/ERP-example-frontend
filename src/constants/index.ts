@@ -2,6 +2,8 @@ export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export const THEME_STORAGE_KEY = "erp-example-web-ui-theme";
 export const REMEMBER_ME_STORAGE_KEY = "erp-example-web-ui-remember-me";
 
+export const DAY_IN_MILLISECONDS = 86400000;
+
 export class QUERY_KEYS {
   static readonly Employee = "employee";
   static readonly EmployeeStats = "employeeStats";

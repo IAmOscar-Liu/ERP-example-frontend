@@ -41,10 +41,8 @@ function DashboardPage() {
     queryFn: () =>
       getEmployeeStats({
         employeeId: currentUser!.id,
-        from: dateStringToDate(
-          statsBoundary.currentMonth.firstDay,
-        )?.toISOString(),
-        to: dateStringToDate(statsBoundary.currentMonth.lastDay)?.toISOString(),
+        fromDate: statsBoundary.currentMonth.firstDay,
+        toDate: statsBoundary.currentMonth.lastDay,
       }),
     enabled: !!currentUser,
     staleTime: STALE_TIME.EmployeeStats,
@@ -57,8 +55,8 @@ function DashboardPage() {
     queryFn: () =>
       getEmployeeStats({
         employeeId: currentUser!.id,
-        from: dateStringToDate(statsBoundary.lastMonth.firstDay)?.toISOString(),
-        to: dateStringToDate(statsBoundary.lastMonth.lastDay)?.toISOString(),
+        fromDate: statsBoundary.lastMonth.firstDay,
+        toDate: statsBoundary.lastMonth.lastDay,
       }),
     enabled: !!currentUser,
     staleTime: STALE_TIME.EmployeeStats,

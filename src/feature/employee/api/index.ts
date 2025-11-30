@@ -1,4 +1,6 @@
+import { DAY_IN_MILLISECONDS } from "@/constants";
 import useAxios from "@/hooks/useAxios";
+import { dateStringToDate } from "@/lib/utils";
 import type { ApiResponse } from "@/type";
 import type { Employee, EmployeeStats } from "../type";
 
@@ -33,13 +35,26 @@ function useEmployeeApi() {
 
   const getEmployeeStats = async ({
     employeeId,
-    from,
-    to,
+    fromDate,
+    toDate,
   }: {
     employeeId: string;
-    from?: string;
-    to?: string;
+    fromDate?: string;
+    toDate?: string;
   }) => {
+    const from = fromDate
+      ? dateStringToDate(fromDate)?.toISOString()
+      : undefined;
+    let to = toDate;
+    if (to) {
+      const endDate = dateStringToDate(to);
+      if (endDate) {
+        to = new Date(
+          +new Date(endDate) + DAY_IN_MILLISECONDS - 1,
+        ).toISOString();
+      }
+    }
+
     return await axios
       .get<ApiResponse<EmployeeStats>>(`/employee/${employeeId}/stats`, {
         params: { from, to },
